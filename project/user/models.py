@@ -50,9 +50,11 @@ class User():
         user = await result.fetchone()
         if user and self.check_password(data['password'], user['password']):
             return {"token": jwt.encode(
-                {"username": user['username'], "id": user['id']}, 
-                SECRET_KEY.encode(),
-                algorithm='HS256').decode("utf-8")}
+                            {"username": user['username'], "id": user['id']}, 
+                            SECRET_KEY.encode(),
+                            algorithm='HS256').decode("utf-8"),
+                    "username": user['username']
+                    }
         else:
             return {'error': 'Invalid data'}
 
