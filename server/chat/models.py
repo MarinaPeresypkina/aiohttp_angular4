@@ -27,28 +27,26 @@ class Message():
         self.engine = request.app.engine
 
     async def get_message(self, msg_id, *kw):
-        conn = await self.engine.acquire()
-        result = await conn.execute(message.select().where(message.c.id==msg_id[0]))
+        async with self.engine.acquire() as conn:
+            result = await conn.execute(message.select().where(message.c.id==msg_id[0]))
         result = await result.fetchone()
         user_model = User(self.request)
-        await user_model.get_conn()
         return await self.format_object(result, user_model, result.keys())
 
     async def save(self, user_id, msg, *kw):
-        conn = await self.engine.acquire()
-        result = await conn.execute(message.insert().values(user_id=user_id,
-            message=msg))
+        async with self.engine.acquire() as conn:
+            result = await conn.execute(message.insert().values(user_id=user_id,
+                message=msg))
         result = await result.fetchone()
         return await self.get_message(result)
 
     async def get_list(self, limit=5, *kw):
         results = list()
-        conn = await self.engine.acquire()
-        result = await conn.execute(message.select().order_by(
-            message.c.date_created.desc()).limit(limit))
+        async with self.engine.acquire() as conn:
+            result = await conn.execute(message.select().order_by(
+                message.c.date_created.desc()).limit(limit))
         keys = result.keys()
         user_model = User(self.request)
-        await user_model.get_conn()
         for res in await result.fetchall():
             results.append(await self.format_object(res, user_model, keys))
         results.reverse()

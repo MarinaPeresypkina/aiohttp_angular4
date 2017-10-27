@@ -25,28 +25,25 @@ class User():
         self.request = request
         self.engine = request.app.engine
 
-    async def get_conn(self):
-        self.conn = await self.engine.acquire()
-
     async def create_user(self, data, *kw):
-        conn = await self.engine.acquire()
-        if not await self.check_user(data['username'], conn):
-            return {'error': 'User already exist'}
-        if data['password'] == '' or data['password'] != data['confirm_password']:
-            return {'error': 'Invalid password'}
+        async with self.engine.acquire() as conn:
+            if not await self.check_user(data['username'], conn):
+                return {'error': 'User already exist'}
+            if data['password'] == '' or data['password'] != data['confirm_password']:
+                return {'error': 'Invalid password'}
 
-        dict_data = dict()
-        for key, value in data.items():
-            if key in users.columns.keys():
-                dict_data[key] = value
-        dict_data['password'] = self.set_password(dict_data['password'])
-        result = await conn.execute(users.insert().values(dict_data))
+            dict_data = dict()
+            for key, value in data.items():
+                if key in users.columns.keys():
+                    dict_data[key] = value
+            dict_data['password'] = self.set_password(dict_data['password'])
+            result = await conn.execute(users.insert().values(dict_data))
         return await result.fetchone()
 
     async def login(self, data, *kw):
-        conn = await self.engine.acquire()
-        result = await conn.execute(
-            users.select().where(users.c.username == data['username']))
+        async with self.engine.acquire() as conn:
+            result = await conn.execute(
+                users.select().where(users.c.username == data['username']))
         user = await result.fetchone()
         if user and self.check_password(data['password'], user['password']):
             return {"token": jwt.encode(
@@ -66,7 +63,8 @@ class User():
             return False
 
     async def get_user_by_id(self, id, *kw):
-        result = await self.conn.execute(users.select().where(users.c.id == id))
+        async with self.engine.acquire() as conn:
+            result = await conn.execute(users.select().where(users.c.id == id))
         return await result.fetchone()
 
     async def check_user(self, username, conn, *kw):
