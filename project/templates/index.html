@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Main Chat page
+{% endblock %}
+
+{% block head %}
+    <link href="{{ app.router.static.url(filename='css/chat.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div id='subscribe'>
+    {% for mes in messages%}
+    <p>[{{ mes['time'].strftime('%H:%M:%S') }}] ({{ mes['user'] }}) {{ mes['msg'] }}</p>
+    {% endfor %}
+</div>
+    <p>
+        <input  type="text" id="message" autocomplete="off">
+        <input class="btn btn-primary" type="submit" id='submit' value="Send">
+        <input class="btn btn-default" type="button", id="signout", value="Sign Out">
+    </p>
+{% endblock %}
+
+{% block footer %}
+    <script src="{{ app.router.static.url(filename='js/main.js') }}"></script>
+{% endblock %}

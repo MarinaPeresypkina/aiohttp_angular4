@@ -1,0 +1,8 @@
+<!-- main app container -->
+<div class="">
+  <div class="container">
+  	<p *ngIf="authenticationService.currentUser"><a [routerLink]="['/login']">Logout</a></p>
+    <alert></alert>
+    <router-outlet></router-outlet>
+  </div>
+</div>

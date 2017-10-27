@@ -1,0 +1,25 @@
+<div class="col-md-12">
+  <div *ngFor="let msg of msgList">
+    <div class="row alert alert-info" *ngIf="authenticationService.currentUser.username == msg.user; else elseBlock">
+        <p class="col-md-2"><b>{{msg.user}}</b></p> 
+        <p class="col-md-8"> {{msg.message}} </p>
+        <p class="col-md-2">({{msg.date_created | date:'dd/MM/yy  H:mm'}})</p> 
+    </div>
+     <ng-template #elseBlock>
+      <div class="row alert alert-dark">
+        <p class="col-md-2">({{msg.date_created | date:'dd/MM/yy  H:mm'}})</p> 
+        <p class="col-md-8 text-right"> {{msg.message}} </p>
+        <p class="col-md-2 text-right"><b>{{msg.user}}</b></p> 
+      </div>
+    </ng-template>
+  </div>
+  <div class="row">
+    <div class="input-group col-md-8">       
+        <input #message type="text" class="form-control">
+        <span class="input-group-btn">
+          <button class="btn btn-secondary" 
+          (click)="sendMsg(message.value); message.value=''">Send</button>
+        </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+aiohttp==2.3.0
+aiohttp-session==1.0.1
+aiopg==0.13.1
+cryptography==2.1.1
+psycopg2==2.7.3.1
+PyJWT==1.5.3
+SQLAlchemy==1.1.14
+
